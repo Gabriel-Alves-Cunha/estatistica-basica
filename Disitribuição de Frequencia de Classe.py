@@ -12,38 +12,43 @@ def handle_file(file):
     for line in f:  # read lines
         array.append([int(x) for x in line.split()])
     f.close()
+    #print("Números no arquivo: ", array, len(array))
     return array
 
 
 def sort_nums(array):
     all_numbers = list(chain(*array))
     num_counted = Counter(all_numbers)
-    # print(num_counted)
+    #print("All num:", all_numbers)
     num_sorted = sorted(num_counted.items())
     print("Collection sorted:\t\t", num_sorted)
     num_individuais = sorted([key for key, value in num_sorted])
-    total_de_num = len(num_individuais)
+    total_de_num = len(all_numbers)
     print("\nNúmeros únicos ordenados:\t", num_individuais)
     print("Total de números:\t\t", total_de_num)
 
-    return num_sorted, num_individuais, total_de_num
+    return all_numbers, num_individuais, total_de_num
 
 
-def amplitude(num_individuais, qnt_de_intervalos):
+def amplitude(num_individuais, num_de_classes):
     amplitude_total = max(num_individuais) - min(num_individuais)
     print("Amplitude total:\t\t", amplitude_total)
 
-    amplitude_intervalo = amplitude_total / qnt_de_intervalos
+    amplitude_intervalo = int(amplitude_total / num_de_classes)
     print("Amplitude de intervalo:\t\t", amplitude_intervalo)
 
-    return (amplitude_total, amplitude_intervalo)
+    return amplitude_total, amplitude_intervalo
 
 
 def num_inter(num_individuais, amplitude_intervalo):
     table_num_inter = []
     begin_num = num_individuais[0]
     table_num_inter.append(begin_num)
-    for _ in range(int(amplitude_intervalo)):
+    rng = range(int(amplitude_total/amplitude_intervalo))
+    #print("rng =", rng)
+
+    for _ in rng:
+        #print("for _ in rng: _ =", _)
         begin_num += amplitude_intervalo
         table_num_inter.append(begin_num)
 
@@ -51,15 +56,18 @@ def num_inter(num_individuais, amplitude_intervalo):
     return table_num_inter
 
 
-def my_table(table_num_inter, amplitude_intervalo):
+def my_table(table_num_inter, num_de_classes, amplitude_intervalo):
     table = BeautifulTable()
     table.columns.header = ["", "Números"]
 
     limits = []
     for i, num in enumerate(table_num_inter):
-        if i == amplitude_intervalo:
+        if i == num_de_classes:
             break
-        table.rows.append([i, f"{num} a {num+amplitude_intervalo}"])
+        if i == num_de_classes-1:
+            table.rows.append([i, f"{num} |----| {num+amplitude_intervalo}"])
+        else:
+            table.rows.append([i, f"{num} |----  {num+amplitude_intervalo}"])
         limits.append(num+amplitude_intervalo)
 
     print()
@@ -68,33 +76,37 @@ def my_table(table_num_inter, amplitude_intervalo):
     return table
 
 
-def fi(table, amplitude_intervalo, num_individuais, table_num_inter):
+def fi(table, num_de_classes, all_numbers, table_num_inter, amplitude_intervalo):
     times = []
-    for index in range(int(amplitude_intervalo)):  # 0 a 6
-        value = table_num_inter[index]  # 14, 20, ..., 44
+    rng = num_de_classes
+    #print("Rng:\t", rng)
+    for index in range(rng):  # 0 a 6 (7)
+        value = table_num_inter[index]  # 15, 20, ..., 50
+        #print("value = ", value)
         acc = 0
-        for v in num_individuais:  # 14, 16, 17, ..., 49, 50
-            if index != (int(amplitude_intervalo)-1):
+        for v in all_numbers:  # 14, 16, 17, ..., 49, 50
+            if index != rng-1:  # index != 6
                 if v >= value and v < value+amplitude_intervalo:
                     # print(v)
                     acc += 1
-            elif index == (int(amplitude_intervalo)-1):
+            elif index == rng-1:
                 if v >= value and v <= value+amplitude_intervalo:
-                    # print(v)
+                    #print("index == rng-1", v)
                     acc += 1
         times.append(acc)
 
-    # print(times)
+    #print("Times:\t", times)
 
     table_ = []
     j = 0
-    for i in range(int(amplitude_intervalo)):
+    for i in range(rng):
         val = table_num_inter[i]
-        if j == int(amplitude_intervalo):
+        if j == rng:  # j == 7
             j = i - 1
+        # print(j)
         table_.append(f"{val} a {table_num_inter[j+1]}: {times[i]}")
         j += 1
-    # print(t)
+    #print("Table:\t", table_)
 
     return table_, times
 
@@ -108,42 +120,75 @@ def Fi(fi):
     return ret
 
 
-def fr(fi, amplitude_total):
+def fri(fi, total_de_num):
     ret = []
     for i in fi:
-        ret.append(round((i / amplitude_total * 100), 2))
+        ret.append(round((i / total_de_num * 100), 2))
+    return ret
+
+
+def Fri(fri):
+    ret = []
+    sum = 0
+    for i in fri:
+        sum += i
+        ret.append(sum)
     return ret
 
 
 # Code flow
 
+file1 = './exemplo 1: Disitribuição de Frequencia de Classe.txt'
+file2 = './exemplo 2: Disitribuição de Frequencia de Classe.txt'
+num_de_classes = 6
 
-array = handle_file('./exemplo: Disitribuição de Frequencia de Classe.txt')
+array = handle_file(file1)
 
-num_sorted, num_individuais, total_de_num = sort_nums(array)
+################
+
+all_numbers, num_individuais, total_de_num = sort_nums(array)
+
+################
+
 
 amplitude_total, amplitude_intervalo = amplitude(
-    num_individuais, qnt_de_intervalos=6)
+    num_individuais, num_de_classes)
+
+################
 
 table_num_inter = num_inter(num_individuais, amplitude_intervalo)
 
-table = my_table(table_num_inter, amplitude_intervalo)
+table = my_table(table_num_inter, num_de_classes, amplitude_intervalo)
 
-fi_str, fi = fi(table, amplitude_intervalo, num_individuais, table_num_inter)
+################
+
+fi_str, fi = fi(table, num_de_classes, all_numbers,
+                table_num_inter, amplitude_intervalo)
 table.columns.insert(2, fi_str, header="fi")
 print(table)
-print("\nSoma de fi == total_de_num:\t", sum(fi), "==", total_de_num)
+print("\nfi:\t\t\t\t", fi)
+print("Soma de fi == total_de_num:\t", sum(fi), "==", total_de_num)
+
+################
 
 Fi = Fi(fi)
-#print("Frequência absoluta acum (Fi):\t", Fi)
+print("Frequência absoluta acum (Fi):\t", Fi)
 table.columns.insert(3, Fi, header="Fi")
 print(table)
 
-fr = fr(fi, amplitude_total)
-#print("Frequência relativa (%):\t", fr)
-table.columns.insert(4, fr, header="fr")
-print(table)
-print("Soma de fr tem que dar 100%:\t", sum(fr))
+################
 
+fri = fri(fi, total_de_num)
+print("Frequência relativa (%):\t", fri)
+table.columns.insert(4, fri, header="fri")
+print(table)
+print("Soma de fri tem que dar 100%:\t", sum(fri))
+
+################
+
+Fri = Fri(fri)
+print("Frequência relativa acum:\t", Fri)
+table.columns.insert(5, Fri, header="Fri")
+print(table)
 
 # %%
