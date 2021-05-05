@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from itertools import chain
 from beautifultable import BeautifulTable
 import numpy
+import math
 
 
 def handle_file(file):
@@ -104,7 +105,8 @@ def fi(table, num_de_classes, all_numbers, table_num_inter, amplitude_intervalo)
         if j == rng:  # j == 7
             j = i - 1
         # print(j)
-        table_.append(f"{val} a {table_num_inter[j+1]}: {times[i]}")
+        #table_.append(f"{val} a {table_num_inter[j+1]}: {times[i]}")
+        table_.append(f"{times[i]}")
         j += 1
     #print("Table:\t", table_)
 
@@ -138,20 +140,18 @@ def Fri(fri):
 
 # Code flow
 
-file1 = './exemplo 1: Disitribuição de Frequencia de Classe.txt'
-file2 = './exemplo 2: Disitribuição de Frequencia de Classe.txt'
-file3 = './exemplo 3: Disitribuição de Frequencia de Classe.txt'
-num_de_classes = 7
+file1 = './exemplo 1: Disitribuição de Frequencia de Classe com Raiz.txt'
 
-array = handle_file(file3)
+array = handle_file(file1)
 
 ################
 
 all_numbers, num_individuais, total_de_num = sort_nums(array)
+num_de_classes = math.ceil(math.sqrt(total_de_num))
 
 ################
 
-# as amplitudes podem ser float. TODO: refatorar
+
 amplitude_total, amplitude_intervalo = amplitude(
     num_individuais, num_de_classes)
 
