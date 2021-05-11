@@ -1,9 +1,9 @@
 # %%
 
-from collections import Counter, defaultdict
+from collections import Counter
 from itertools import chain
 from beautifultable import BeautifulTable
-import numpy
+from beautifultable.enums import STYLE_GRID
 import math
 
 
@@ -21,22 +21,22 @@ def sort_nums(array):
     all_numbers = list(chain(*array))
     num_counted = Counter(all_numbers)
     #print("All num:", all_numbers)
-    num_sorted = sorted(num_counted.items())
-    print("Collection sorted:\t\t", num_sorted)
-    num_individuais = sorted([key for key, value in num_sorted])
+    collection_sorted = sorted(num_counted.items())
+    print("Collection sorted:\t\t", collection_sorted)
+    num_individuais = sorted([key for key, value in collection_sorted])
     total_de_num = len(all_numbers)
     print("\nNúmeros únicos ordenados:\t", num_individuais)
     print("Total de números:\t\t", total_de_num)
 
-    return all_numbers, num_individuais, total_de_num
+    return all_numbers, num_individuais, total_de_num, collection_sorted
 
 
 def amplitude(num_individuais, num_de_classes):
     amplitude_total = max(num_individuais) - min(num_individuais)
-    print("Amplitude total:\t\t", amplitude_total)
+    print("Amplitude total (AT) = valor máximo encontrado menos valor mínimo:", amplitude_total)
 
     amplitude_intervalo = int(amplitude_total / num_de_classes)
-    print("Amplitude de intervalo:\t\t", amplitude_intervalo)
+    print("Amplitude do intervalo (H) = amplitude total / número de classes: ", amplitude_intervalo)
 
     return amplitude_total, amplitude_intervalo
 
@@ -53,7 +53,7 @@ def num_inter(num_individuais, amplitude_intervalo):
         begin_num += amplitude_intervalo
         table_num_inter.append(begin_num)
 
-    print("table_num_inter:\t\t", table_num_inter)
+    print("table_num_inter:", table_num_inter)
     return table_num_inter
 
 
@@ -77,7 +77,7 @@ def my_table(table_num_inter, num_de_classes, amplitude_intervalo):
     return table
 
 
-def fi(table, num_de_classes, all_numbers, table_num_inter, amplitude_intervalo):
+def fi(num_de_classes, all_numbers, table_num_inter, amplitude_intervalo):
     times = []
     rng = num_de_classes
     #print("Rng:\t", rng)
@@ -138,19 +138,62 @@ def Fri(fri):
     return ret
 
 
+def dados_em_rol(collection_sorted, all_numbers, num_cols, num_rows):
+    nums_table = BeautifulTable()
+    nums_table.set_style(STYLE_GRID)
+
+    nums = []
+    for num, times in collection_sorted:
+        #print("num:", num,"\ntimes:", times)
+        for _ in range(0, times):
+            nums.append(num)
+
+    cols = []
+
+    start_index = 0
+    end_index = num_cols
+
+    for _col_number in range(0, num_rows):
+        arr_to_append = [x for x in nums[start_index:end_index]]
+        if len(arr_to_append) < num_cols:
+            for i in range(0,(num_cols-len(arr_to_append))):
+                arr_to_append.append("")
+        cols.append(arr_to_append)
+        start_index += num_cols
+        end_index += num_cols
+
+    #print(cols)
+    for i in cols:
+        #print(i)
+        nums_table.rows.append(i)
+
+    print("\nNúmeros em rol:")
+    print(nums_table)
+    print()
+    assert len(nums) == len(all_numbers)
+
+
 # Code flow
 
 file1 = './exemplo 1: Disitribuição de Frequencia de Classe com Raiz.txt'
+file2 = './exemplo 2: Disitribuição de Frequencia de Classe com Raiz.txt'
 
-array = handle_file(file1)
+array = handle_file(file2)
+# For file 2:
+num_cols = 10
+num_rows = 15
 
 ################
 
-all_numbers, num_individuais, total_de_num = sort_nums(array)
+all_numbers, num_individuais, total_de_num, collection_sorted = sort_nums(
+    array)
+
 num_de_classes = math.ceil(math.sqrt(total_de_num))
+print("Número de classes:\t\t", num_de_classes)
+
+dados_em_rol(collection_sorted, all_numbers, num_cols, num_rows)
 
 ################
-
 
 amplitude_total, amplitude_intervalo = amplitude(
     num_individuais, num_de_classes)
@@ -163,25 +206,41 @@ table = my_table(table_num_inter, num_de_classes, amplitude_intervalo)
 
 ################
 
-fi_str, fi = fi(table, num_de_classes, all_numbers,
+fi_str, fi = fi(num_de_classes, all_numbers,
                 table_num_inter, amplitude_intervalo)
 table.columns.insert(2, fi_str, header="fi")
+print("\nA tabela de frequência (fi = frequência do número) nos diz quantos números há em uma designada faixa de valores:")
 print(table)
-print("\nfi:\t\t\t\t", fi)
+#print("\nfi:\t\t\t\t", fi)
+print("""
+
+x |---- y Significa fechado no inicio e aberto no final (o número x faz parte da classe e o número y não).
+x ----| y Significa aberto no início e fechado no final (o número x não faz parte da classe e o número y faz).
+x |---| y Significa fechado no início e no final (o número x e y fazem parte da classe). Sempre a utilizamos na última classe para contemplar todos os valores encontrados na pesquisa.
+
+""")
+print("Média de fi =", sum(fi)/len(fi))
 print("Soma de fi == total_de_num:\t", sum(fi), "==", total_de_num)
 
 ################
 
 Fi = Fi(fi)
-#print("Frequência absoluta acum (Fi):\t", Fi)
 table.columns.insert(3, Fi, header="Fi")
+#print("Frequência absoluta acum (Fi):\t", Fi)
+print("""
+Frequência absoluta acumulada do número (Fi)
+Fi = soma das frequências do número atual com os anteriores.
+Ela representa a soma de todas as frequências até o ponto presente no conjunto de dados:""")
 print(table)
 
 ################
 
 fri = fri(fi, total_de_num)
 #print("Frequência relativa (%):\t", fri)
-table.columns.insert(4, fri, header="fri")
+table.columns.insert(4, fri, header="fri (%)")
+print("""
+Frequência relativa do número (fri)
+fri = ( fi / soma de fi ) * 100. É a porcentagem de um determinado valor na amostra:""")
 print(table)
 print("Soma de fri tem que dar 100%:\t", sum(fri))
 
@@ -189,7 +248,11 @@ print("Soma de fri tem que dar 100%:\t", sum(fri))
 
 Fri = Fri(fri)
 #print("Frequência relativa acum:\t", Fri)
-table.columns.insert(5, Fri, header="Fri")
+table.columns.insert(5, Fri, header="Fri (%)")
+print("""
+Frequência relativa acumulada do número (Fri)
+Fri = ( Fi / soma de fi ) * 100.
+Ela representa a soma de todas as frequências relativas até o ponto presente no conjunto de dados:""")
 print(table)
 
 # %%
