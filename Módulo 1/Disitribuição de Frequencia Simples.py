@@ -5,16 +5,18 @@ from itertools import chain
 from beautifultable import BeautifulTable
 from beautifultable.enums import STYLE_GRID, STYLE_NONE
 
-
+#%%
 def handle_file(file):
     f = open(file)
     array = []
     for line in f:  # read lines
         array.append([int(x) for x in line.split()])
     f.close()
-    # print("Números no arquivo: ", array, len(array))
+    print("Números no arquivo:\n", array, len(array))
     return array
-
+# file1 = './Exemplos/exemplo 1: Disitribuição de Frequencia Simples.txt'
+# handle_file(file1)
+#%%
 
 def sort_nums(array):
     all_numbers = list(chain(*array))

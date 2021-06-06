@@ -175,8 +175,8 @@ def dados_em_rol(collection_sorted, all_numbers, num_cols, num_rows):
 
 # Code flow
 
-file1 = './exemplo 1: Disitribuição de Frequencia de Classe com Raiz.txt'
-file2 = './exemplo 2: Disitribuição de Frequencia de Classe com Raiz.txt'
+file1 = './Exemplos/exemplo 1: Disitribuição de Frequencia de Classe com Raiz.txt'
+file2 = './Exemplos/exemplo 2: Disitribuição de Frequencia de Classe com Raiz.txt'
 
 array = handle_file(file2)
 # For file 2:
