@@ -49,7 +49,6 @@ def num_inter(num_individuais, amplitude_intervalo):
     #print("rng =", rng)
 
     for _ in rng:
-        #print("for _ in rng: _ =", _)
         begin_num += amplitude_intervalo
         table_num_inter.append(begin_num)
 
@@ -80,7 +79,7 @@ def my_table(table_num_inter, num_de_classes, amplitude_intervalo):
 def fi(num_de_classes, all_numbers, table_num_inter, amplitude_intervalo):
     times = []
     rng = num_de_classes
-    #print("Rng:\t", rng)
+
     for index in range(rng):  # 0 a 6 (7)
         value = table_num_inter[index]  # 15, 20, ..., 50
         #print("value = ", value)
@@ -101,7 +100,6 @@ def fi(num_de_classes, all_numbers, table_num_inter, amplitude_intervalo):
     table_ = []
     j = 0
     for i in range(rng):
-        val = table_num_inter[i]
         if j == rng:  # j == 7
             j = i - 1
         # print(j)

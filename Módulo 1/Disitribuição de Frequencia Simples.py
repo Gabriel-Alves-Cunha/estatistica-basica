@@ -3,7 +3,7 @@
 from collections import Counter
 from itertools import chain
 from beautifultable import BeautifulTable
-from beautifultable.enums import STYLE_GRID, STYLE_NONE
+from beautifultable.enums import STYLE_GRID
 
 #%%
 def handle_file(file):
