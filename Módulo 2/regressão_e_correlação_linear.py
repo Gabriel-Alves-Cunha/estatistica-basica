@@ -11,7 +11,7 @@ def handle_file(file):
     f = open(file)
     array = []
     for line in f:  # read lines
-        array.append([int(x) for x in line.split()])
+        array.append([float(x) for x in line.split()])
     f.close()
     # print("Números no arquivo: ", array, len(array))
     return array
@@ -38,7 +38,7 @@ def my_table_with_x_and_y(x_values, y_values, x_name, y_name):
     table.columns.append(y_values, header=y_name)
 
     table.set_style(STYLE_GRID)
-    #print(table)
+    # print(table)
     return table
 
 
@@ -101,7 +101,7 @@ def coeff_de_correlação(sums_table, size):
 
     assert -1 < r < 1
 
-    return round(r, 4)
+    return r
 
 
 def coeff_de_regressão(sums_table, size):
@@ -116,9 +116,9 @@ def coeff_de_regressão(sums_table, size):
 
     denominador = soma_de_x2 - (soma_de_x_2 / size)
 
-    b = round(numerador / denominador, 4)
+    b = numerador / denominador
 
-    a = round((soma_de_y / size) - (1.171 * (soma_de_x / size)), 4)
+    a = (soma_de_y / size) - (b * (soma_de_x / size))
 
     sign_b = "+" if sign(b) > 0 else "-"
 
@@ -126,6 +126,7 @@ def coeff_de_regressão(sums_table, size):
 
 
 ##############
+
 file1 = "./exemplos/exemplo 1: Regressão e correlação linear.txt"
 header_x_file_1 = "(Poluentes) ppm"
 header_y_file_1 = "ID água (%)"
@@ -142,6 +143,14 @@ file4 = "./exemplos/exemplo 4: Regressão e correlação linear.txt"
 header_x_file_4 = "Liga (%)"
 header_y_file_4 = "Resistência (kg/f)"
 
+file5 = "./exemplos/exemplo 5: Regressão e correlação linear.txt"
+header_x_file_5 = "X"
+header_y_file_5 = "Y"
+
+file6 = "./exemplos/exemplo 6: Regressão e correlação linear.txt"
+header_x_file_6 = "X"
+header_y_file_6 = "Y"
+
 array = handle_file(file4)
 # print(array)
 
@@ -157,7 +166,7 @@ sums_table = table_of_sums(table)
 
 r = coeff_de_correlação(sums_table, len(x_values))
 print("r =", r)
-print("r² =", round(r*r, 4))
+print("r² =", r*r)
 
 reg = coeff_de_regressão(sums_table, len(x_values))
 
